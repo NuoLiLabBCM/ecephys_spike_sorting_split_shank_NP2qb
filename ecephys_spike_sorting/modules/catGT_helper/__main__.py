@@ -1,5 +1,6 @@
 from argschema import ArgSchemaParser
 import os
+import shlex
 import sys
 import subprocess
 import time
@@ -53,38 +54,38 @@ def run_CatGT(args):
     maxZ_str = '-maxZ=' + args['catGT_helper_params']['probe_string'] \
             + ',1,' + repr(args['catGT_helper_params']['maxZ_um'])
 
+    dest_dir = args['directories']['extracted_data_directory']
     
-    cmd_parts = list()
-    
-    cmd_parts.append(catGTexe_fullpath)
-    cmd_parts.append('-dir=' + args['directories']['npx_directory'])
-    cmd_parts.append('-run=' + args['catGT_helper_params']['run_name'])
-    cmd_parts.append('-g=' + args['catGT_helper_params']['gate_string'])
-    cmd_parts.append('-t=' + args['catGT_helper_params']['trigger_string'])
-    cmd_parts.append('-prb=' + args['catGT_helper_params']['probe_string'])
-    cmd_parts.append(args['catGT_helper_params']['stream_string'])
-    cmd_parts.append(car_str)
+    # Build argv: keep each -name=value as one arg so paths with spaces in -dir= / -dest= work.
+    # Only split stream_string and cmdStr (can contain many flags).
+    argv = [catGTexe_fullpath,
+            '-dir=' + args['directories']['npx_directory'],
+            '-run=' + args['catGT_helper_params']['run_name'],
+            '-g=' + args['catGT_helper_params']['gate_string'],
+            '-t=' + args['catGT_helper_params']['trigger_string'],
+            '-prb=' + args['catGT_helper_params']['probe_string'],
+            ]
+    for tok in shlex.split(args['catGT_helper_params']['stream_string'].strip(), posix=(os_str == 'linux')):
+        if tok:
+            argv.append(tok)
+    if car_str and car_str.strip():
+        argv.append(car_str.strip())
     if args['catGT_helper_params']['maxZ_um'] > 0:
-        cmd_parts.append(maxZ_str)
-    cmd_parts.append(args['catGT_helper_params']['cmdStr'])
-    cmd_parts.append('-dest=' + args['directories']['extracted_data_directory'])
-    
-    # print('cmd_parts')
+        argv.append(maxZ_str)
+    for tok in shlex.split(args['catGT_helper_params']['cmdStr'].strip(), posix=(os_str == 'linux')):
+        if tok:
+            argv.append(tok)
+    argv.append('-dest=' + dest_dir)
 
-    catGT_cmd = ' '        # use space as the separator for the command parts
-    catGT_cmd = catGT_cmd.join(cmd_parts[1:len(cmd_parts)]) # these are the parameters
-    if os_str=='linux':
-        # enclose the params in single quotes, so curly braces will not be interpreted by Linux
-        catGT_cmd = f"{cmd_parts[0]} '{catGT_cmd}'"
-    else:
-        catGT_cmd = f"{cmd_parts[0]} {catGT_cmd}"
-    
-    
-    
-    print('CatGT command line:' + catGT_cmd)
-    
+    # Readable log line (adds quotes where Windows needs them for spaces)
+    try:
+        cmd_display = subprocess.list2cmdline(argv)
+    except Exception:
+        cmd_display = ' '.join(repr(x) for x in argv)
+    print('CatGT command line: ' + cmd_display)
+
     start = time.time()
-    subprocess.Popen(catGT_cmd,shell='False').wait()
+    subprocess.Popen(argv, shell=False).wait()
 
     execution_time = time.time() - start
     
@@ -109,8 +110,12 @@ def run_CatGT(args):
     
     
     catgt_runDir = os.path.join(args['directories']['extracted_data_directory'],catgt_runName)
-    shutil.copyfile(os.path.join(logPath,logName), \
-                    os.path.join(catgt_runDir,catgt_logName))
+    src_log = os.path.join(logPath, logName)
+    dst_log = os.path.join(catgt_runDir, catgt_logName)
+    if not os.path.isfile(src_log):
+        raise FileNotFoundError('CatGT did not produce %s in %s (CatGT may have failed).' % (logName, logPath))
+    os.makedirs(catgt_runDir, exist_ok=True)
+    shutil.copyfile(src_log, dst_log)
     
     # if an fyi file was created, check if there is aleady an 'all_fyi.txt'
     run_name = args['catGT_helper_params']['run_name'] + '_g' + str(first_gate)

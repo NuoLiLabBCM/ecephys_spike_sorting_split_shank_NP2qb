@@ -19,10 +19,12 @@ def runOne( session_id,
                  ):
     
     if run_CatGT:
-        command = sys.executable + " -W ignore -m ecephys_spike_sorting.modules." + 'catGT_helper' + " --input_json " + catGT_input_json \
-		          + " --output_json " + catGT_output_json
-        print(command)
-        subprocess.check_call(command.split(' '))  
+        argv = [
+            sys.executable, '-W', 'ignore', '-m', 'ecephys_spike_sorting.modules.catGT_helper',
+            '--input_json', catGT_input_json, '--output_json', catGT_output_json,
+        ]
+        print(subprocess.list2cmdline(argv))
+        subprocess.check_call(argv)
     
     # if we are running any modules
     # copy module json file to data directory as record of the input parameters 
@@ -30,11 +32,13 @@ def runOne( session_id,
         shutil.copy(module_input_json, os.path.join(data_directory, session_id + '-input.json'))
     
     for module in modules:
-        output_json = os.path.join(json_directory, session_id + '-' + module + '-output.json')  
-        command = sys.executable + " -W ignore -m ecephys_spike_sorting.modules." + module + " --input_json " + module_input_json \
-		          + " --output_json " + output_json
-        print(command)
-        subprocess.check_call(command.split(' '))
+        output_json = os.path.join(json_directory, session_id + '-' + module + '-output.json')
+        argv = [
+            sys.executable, '-W', 'ignore', '-m', 'ecephys_spike_sorting.modules.' + module,
+            '--input_json', module_input_json, '--output_json', output_json,
+        ]
+        print(subprocess.list2cmdline(argv))
+        subprocess.check_call(argv)
         
     log_from_json.addEntry(modules, json_directory, session_id, logFullPath)# -*- coding: utf-8 -*-
 
