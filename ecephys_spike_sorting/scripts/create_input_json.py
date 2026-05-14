@@ -87,7 +87,7 @@ def createInputJson(output_file,
         print(f"CUBLAS_WORKSPACE_CONFIG is set to: {os.environ.get('CUBLAS_WORKSPACE_CONFIG')}")
     
     # hard coded paths to code on your computer and system
-    ecephys_directory = r'C:\Users\labadmin\Documents\ecephys_spike_sorting\ecephys_spike_sorting'
+    ecephys_directory = r'E:\Duke_Ephys\ecephys_spike_sorting\ecephys_spike_sorting'
     
     # location of kilosort respositories for MATLAB versions.
     # determins what will be run by the kilosort_helper module
@@ -95,19 +95,19 @@ def createInputJson(output_file,
     if ks_ver == '2.0':
         kilosort_repository = r'C:\Users\colonellj\Documents\KS20_for_preprocessed_data'
     elif ks_ver == '2.5':      
-        kilosort_repository = r'C:\Users\colonellj\Documents\KS2.5.2_seed'
+        kilosort_repository = r'C:\BCM_pipeline\SpikeSorting_Kilosort_Lilab_server\PreProcessing\setups\Kilosort-2.5'
     elif ks_ver == '3.0':
         kilosort_repository = r'C:\Users\labadmin\Documents\KS20_for_preprocessed_data'
     else:
         kilosort_repository = r''  # default path for when we aren't using any of these
             
-    npy_matlab_repository = r'C:\Users\labadmin\Documents\npy-matlab'
-    catGTPath = r'C:\Users\labadmin\Documents\CatGT-win'
-    tPrime_path=r'C:\Users\labadmin\Documents\TPrime-win'
-    cWaves_path=r'C:\Users\labadmin\Documents\C_Waves-win'
+    npy_matlab_repository = r'C:\BCM_pipeline\SpikeSorting_Kilosort_Lilab_server\PreProcessing\setups\npy-matlab-master'
+    catGTPath = r'E:\Duke_Ephys\CatGT-win'
+    tPrime_path = r'C:\BCM_pipeline\SpikeSorting_Kilosort_Lilab_server\PreProcessing\setups\TPrime-win'
+    cWaves_path = r'E:\Duke_Ephys\C_Waves-win'
          
     # for config files and kilosort working space
-    kilosort_output_tmp = r'D:\kilosort_datatemp' 
+    kilosort_output_tmp = r'E:\Duke_Ephys\Spikesorting_tempFile' 
     
     
     # KS 3.0 and 4 do not calculation pc features for phy
