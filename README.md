@@ -2,7 +2,7 @@
 
 
 ## Overview
-This was based on Jennifer's pipeline. The goal here is to sort NP2 quad base data, by treating each shank as a NP1.
+This was based on Jennifer's pipeline. The goal here is to sort NP2 quad base data, by sorting each shank seperately. The time required is equivalent to sorting 4 NP1 probes.
 
 ## why I choose to split shanks instead of sorting the whole NP2 quad base all at once
 - Each shank is seperated in a large distance, sorting shank by shank does not influence the final outcome.
