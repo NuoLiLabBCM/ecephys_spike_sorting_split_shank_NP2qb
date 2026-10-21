@@ -16,8 +16,8 @@ This was based on Jennifer's pipeline. The goal here is to sort NP2 quad base da
 
 ## Installation and Usage for the SpikeGLX pipeline
 
-### Download the newest version of Catgt 
- [CatGT](http://billkarsh.github.io/SpikeGLX/#catgt)
+### Download the newest version of Catgt & CWave
+ [CatGT & CWave](http://billkarsh.github.io/SpikeGLX/#catgt)
 
 ### Install ecephys environment and code
 
